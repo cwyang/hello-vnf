@@ -1,0 +1,47 @@
+#!/bin/bash
+
+function log() {
+    logger -i -p local0.info -t hello "$@"
+}
+
+function run() {
+    local verb="${1^}"
+    local lastc="${verb:(-1)}"
+    case "$lastc" in
+        p)
+            verb="${verb}ping"
+            ;;
+        *)
+            verb="${verb}ing"
+            ;;
+    esac
+    echo ${verb} hello..
+    log ${verb} hello..
+}
+
+case "$1" in
+    start)
+        run "$1"
+        ;;
+    stop)
+        run "$1"
+        ;;
+    restart)
+        run "$1"
+        ;;
+    reset)
+        run "$1"
+        ;;
+    reload)
+        run "$1"
+        ;;
+    stat)
+        run "$1"
+        ;;
+    *)
+        echo "Usage: helloctl {start|stop|restart|reload|reset|stat}"
+        exit 1
+        ;;
+esac
+
+exit 0

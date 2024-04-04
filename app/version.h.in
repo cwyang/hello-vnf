@@ -1,0 +1,18 @@
+#ifndef HELLO_VERSION_H
+#define HELLO_VERSION_H
+
+#ifdef HELLO_HAS_GITREV_H
+#include "gitrev.h"
+#endif
+
+#ifdef HELLO_GITREV
+#define HELLO_VERSION "@VERSION@@" H2O_TO_STR(HELLO_GITREV)
+#else
+#define HELLO_VERSION "@VERSION@"
+#endif
+
+#define HELLO_PROGNAME "hello"
+#define HELLO_VERSION_MAJOR @VERSION_MAJOR@
+#define HELLO_VERSION_MINOR @VERSION_MINOR@
+#define HELLO_VERSION_PATCH @VERSION_PATCH@
+#endif
