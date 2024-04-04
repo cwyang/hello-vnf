@@ -1,4 +1,3 @@
 # ho-vnf
-Hello World VNF
-
-~~HW~~ HO VNF
+Highly Optimized VNF
+Hello, World! VNF

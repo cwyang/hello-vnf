@@ -40,19 +40,27 @@ $(BUILDDIR)/Makefile: CMakeLists.txt
 clean:
 	cd $(BUILDDIR); make clean
 
-ifeq ($(MAKECMDGOALS),docker)
-GETNUM = $(shell sed -n 's/.*$1	 *\([0-9*]\)/\1/p' ${VERSION_FILE})
+DOCKER_TARGETS := docker alpine
+ifeq ($(filter $(MAKECMDGOALS),$(TARGETS)),)
+GETNUM = $(shell sed -n 's/.*$1 *\([0-9]*\)/\1/p' ${VERSION_FILE})
 HELLO_VERSION := $(call GETNUM,MAJOR).$(call GETNUM,MINOR).$(call GETNUM,PATCH)-${BUILD_DATE}
 HELLO_IMG := cwyang/${PROGNAME}
-HELLO_REPO := repo.com/${PROGNAME}
+HELLO_REPO := cwyang/${PROGNAME}
+ifeq ($(MAKECMDGOALS),docker)
+DOCKERFILE=Dockerfile
+else
+DOCKERFILE=Dockerfile.alpine
 endif
-docker: all
+endif
+docker alpine: all
 	[ -x "$(DOCKER)" ] || (echo "docker is not installed in this machine." && exit 1)
 	docker build --build-arg BUILD_DATE=${BUILD_DATE} \
 		     --build-arg DESTDIR=/opt/${PROGNAME} \
-		     -f misc/Dockerfile -t ${HELLO_IMG}:latest .
+		     -f misc/${DOCKERFILE} -t ${HELLO_IMG}:latest .
 	docker tag ${HELLO_IMG}:latest ${HELLO_REPO}:latest
 	docker push ${HELLO_REPO}:latest
+	docker tag ${HELLO_IMG}:latest ${HELLO_REPO}:${HELLO_VERSION}
+	docker push ${HELLO_REPO}:${HELLO_VERSION}
 
 .PHONY: $(COMMANDS)
 COMMANDS := start stop restart reset reload stat

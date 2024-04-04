@@ -1,0 +1,37 @@
+#
+# Ubuntu
+#
+
+FROM ubuntu:22.04
+
+# huge packages go first (for better cacheability)
+# tools for building and testing
+#RUN apt-get install --yes gdb binutils dnsutils
+RUN apt-get --yes update && \
+    apt-get install --yes ipset && \
+    apt-get install --yes wget sudo tcpdump && \
+    apt-get install --yes net-tools iputils-ping iptables tzdata ipset iproute2
+
+# use dumb-init
+RUN wget -O /usr/local/bin/dumb-init https://github.com/Yelp/dumb-init/releases/download/v1.2.2/dumb-init_1.2.2_amd64 \
+ && chmod +x /usr/local/bin/dumb-init
+
+# create user
+RUN useradd --create-home user && \
+    echo 'user ALL=(ALL) NOPASSWD:ALL' >> /etc/sudoers
+WORKDIR /opt/hello
+#USER root
+#USER user
+
+#timezone setting
+ENV TZ=Asia/Seoul
+RUN sudo ln -snf /usr/share/zoneinfo/$TZ /etc/localtime && echo $TZ > /etc/timezone
+
+ENV DESTDIR /opt/hello/
+RUN mkdir /opt/hello/conf
+COPY build/bundle/hello build/bundle/helloctl ${DESTDIR}/bin/
+COPY etc ${DESTDIR}/etc/
+
+ENTRYPOINT ["/usr/local/bin/dumb-init", "--", "/opt/hello/bin/hello"]
+CMD ["bash"]
+#EXPOSE 8081/tcp
