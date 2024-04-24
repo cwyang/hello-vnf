@@ -1,4 +1,2 @@
-# ho-vnf
-Highly Optimized VNF
-
+# Hello VNF
 Hello, World! VNF
